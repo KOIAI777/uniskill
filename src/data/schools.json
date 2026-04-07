@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "bnbu",
+    "name": "BNBU",
+    "nameZh": "BNBU",
+    "country": "CN",
+    "skillCount": 2
+  },
+  {
+    "slug": "uic",
+    "name": "UIC",
+    "nameZh": "UIC",
+    "country": "CN",
+    "skillCount": 0
+  }
+]

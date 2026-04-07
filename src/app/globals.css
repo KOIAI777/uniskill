@@ -1,26 +1,172 @@
 @import "tailwindcss";
 
+/* UniSkill Design System - "The Architectural Precision" */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary: Authoritative Blue */
+  --primary: #004ac6;
+  --primary-container: #2563eb;
+  --on-primary: #ffffff;
+  --on-primary-container: #001a41;
+  --primary-fixed: #dbe1ff;
+  --primary-fixed-dim: #b4c5ff;
+  --on-primary-fixed: #001a41;
+
+  /* Secondary: Functional Emerald */
+  --secondary: #006c49;
+  --secondary-container: #89f8c7;
+  --on-secondary: #ffffff;
+  --on-secondary-container: #002114;
+  --secondary-fixed: #6ffbbe;
+  --secondary-fixed-dim: #51dea3;
+
+  /* Tertiary */
+  --tertiary: #4d556b;
+  --on-tertiary: #ffffff;
+
+  /* Error */
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+
+  /* Surface Hierarchy (Tonal Architecture) */
+  --surface: #f7f9fb;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f1f3f5;
+  --surface-container: #eceef0;
+  --surface-container-high: #e6e8ea;
+  --surface-container-highest: #e0e3e5;
+  --on-surface: #191c1e;
+  --on-surface-variant: #43474e;
+
+  /* Inverse */
+  --inverse-surface: #2e3133;
+  --inverse-on-surface: #f0f0f3;
+  --inverse-primary: #b4c5ff;
+
+  /* Outline */
+  --outline: #73777f;
+  --outline-variant: #c3c6d7;
+
+  /* Background */
+  --background: var(--surface);
+  --foreground: var(--on-surface);
 }
 
 @theme inline {
+  /* Colors */
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-primary-fixed-dim: var(--primary-fixed-dim);
+  --color-on-primary-fixed: var(--on-primary-fixed);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary: var(--on-secondary);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-secondary-fixed: var(--secondary-fixed);
+  --color-secondary-fixed-dim: var(--secondary-fixed-dim);
+
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+
+  --color-error: var(--error);
+  --color-on-error: var(--on-error);
+
+  --color-surface: var(--surface);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+
+  --color-inverse-surface: var(--inverse-surface);
+  --color-inverse-on-surface: var(--inverse-on-surface);
+  --color-inverse-primary: var(--inverse-primary);
+
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Fonts */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/* Ambient Shadow (Ghost Shadow from DESIGN.md) */
+.shadow-ambient {
+  box-shadow: 0px 10px 40px rgba(25, 28, 30, 0.06);
+}
+
+/* Gradient for Primary CTA buttons */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-container));
+}
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, #004ac6 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-bottom: 0.05em;
+}
+
+/* Glassmorphism for Navigation */
+.glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Page enter animation */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-in {
+  animation: page-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up   { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-up-1 { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both; }
+.animate-fade-up-2 { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both; }
+.animate-fade-up-3 { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both; }
+.animate-fade-up-4 { animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both; }

@@ -1,0 +1,69 @@
+[
+  {
+    "slug": "eap-format-reference-checker",
+    "name": "eap-format-reference-checker",
+    "nameZh": "EAP 格式与引用检查器",
+    "description": "APA 7th format checker for EAP essays — deep .docx XML inspection of line spacing, margins, fonts, headings, figures, plus in-text citation validation, reference list formatting, cross-reference matching, and online source verification",
+    "descriptionZh": "EAP 学术论文 APA 7 格式检查工具 — 深度解析 .docx XML 检测行距、页边距、字体、标题层级、图表格式，同时验证文内引用、参考文献格式、交叉引用匹配，并联网核实参考文献真实性",
+    "category": [
+      "formatting",
+      "reference"
+    ],
+    "schools": [
+      "bnbu"
+    ],
+    "tags": [
+      "apa7",
+      "reference",
+      "citation",
+      "formatting",
+      "eap",
+      "universal",
+      "academic-writing",
+      "docx-xml"
+    ],
+    "installCommand": "claude skill install https://uniskill.online/skills/eap-format-reference-checker.zip",
+    "downloadPath": "/skills/eap-format-reference-checker.zip",
+    "githubUrl": "https://github.com/uniskill/skills",
+    "version": "1.1.0",
+    "downloads": 0,
+    "featured": false,
+    "createdAt": "2026-04-06",
+    "preview": {
+      "screenshots": [],
+      "exampleInput": "",
+      "exampleOutput": ""
+    }
+  },
+  {
+    "slug": "wjx-auto-fill",
+    "name": "wjx-auto-fill",
+    "nameZh": "问卷星自动填写",
+    "description": "Automate WJX (wjx.cn) questionnaire filling with Playwright — DOM analysis, question type templates, and post-submit retry state machine for batch survey completion",
+    "descriptionZh": "自动化填写问卷星（wjx.cn）问卷。包含完整接新问卷分析流程、DOM 调试脚本、题型填写模板、提交后循环弹窗状态机。适用于批量填写问卷、自动填写表单等场景。",
+    "category": "research",
+    "schools": [
+      "bnbu"
+    ],
+    "tags": [
+      "wjx",
+      "questionnaire",
+      "automation",
+      "playwright",
+      "survey",
+      "batch-fill"
+    ],
+    "installCommand": "claude skill install https://uniskill.online/skills/wjx-auto-fill.zip",
+    "downloadPath": "/skills/wjx-auto-fill.zip",
+    "githubUrl": "https://github.com/uniskill/skills",
+    "version": "1.0.0",
+    "downloads": 0,
+    "featured": false,
+    "createdAt": "2026-04-07",
+    "preview": {
+      "screenshots": [],
+      "exampleInput": "",
+      "exampleOutput": ""
+    }
+  }
+]

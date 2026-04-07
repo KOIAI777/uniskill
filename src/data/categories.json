@@ -1,0 +1,8 @@
+[
+  { "slug": "formatting", "name": "Essay Formatting", "nameZh": "作业格式化", "icon": "edit_note", "description": "Format essays to your school's requirements" },
+  { "slug": "reference", "name": "Reference Check", "nameZh": "引用检查", "icon": "menu_book", "description": "Check and fix citation formats" },
+  { "slug": "email", "name": "Academic Email", "nameZh": "学术邮件", "icon": "mail", "description": "Write professional academic emails" },
+  { "slug": "exam", "name": "Exam Prep", "nameZh": "考试复习", "icon": "quiz", "description": "Analyze rubrics and prepare for exams" },
+  { "slug": "presentation", "name": "Presentation", "nameZh": "演讲准备", "icon": "slideshow", "description": "Prepare and practice presentations" },
+  { "slug": "research", "name": "Research", "nameZh": "文献研究", "icon": "search", "description": "Organize and review literature" }
+]

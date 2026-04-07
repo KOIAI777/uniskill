@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "build:skills": "tsx scripts/build-skills.ts",
+    "prebuild": "tsx scripts/build-skills.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -15,12 +17,16 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/archiver": "^7.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "archiver": "^7.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
+    "gray-matter": "^4.0.3",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
