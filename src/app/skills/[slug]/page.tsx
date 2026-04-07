@@ -4,6 +4,7 @@ import { Icon } from "@/components/ui/icon";
 import { CopyButton } from "@/components/skill/copy-button";
 import { DownloadButton } from "@/components/skill/download-button";
 import { SkillCard } from "@/components/skill/skill-card";
+import { AdSlot } from "@/components/layout/ad-slot";
 import { getSkillBySlug, getRelatedSkills, getAllSkills } from "@/lib/skills";
 import type { Metadata } from "next";
 
@@ -205,6 +206,11 @@ export default async function SkillDetailPage({
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Ad */}
+      <section className="mb-20">
+        <AdSlot format="horizontal" />
       </section>
 
       {/* Metadata sidebar */}

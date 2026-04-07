@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { SkillCard } from "@/components/skill/skill-card";
+import { AdSlot } from "@/components/layout/ad-slot";
 import {
   getSchoolBySlug,
   getSkillsBySchool,
@@ -149,6 +150,13 @@ export default async function SchoolPage({
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Ad */}
+      <section className="px-6 pb-16">
+        <div className="max-w-7xl mx-auto">
+          <AdSlot format="horizontal" />
         </div>
       </section>
     </>

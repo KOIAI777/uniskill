@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { SkillCard } from "@/components/skill/skill-card";
 import { SearchBar } from "@/components/skill/search-bar";
+import { AdSlot } from "@/components/layout/ad-slot";
 import { getFeaturedSkills, getAllCategories, getAllSchools, getAllSkills } from "@/lib/skills";
 
 export default function HomePage() {
@@ -123,6 +124,13 @@ export default function HomePage() {
               </a>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Ad */}
+      <section className="px-6 py-8">
+        <div className="max-w-7xl mx-auto">
+          <AdSlot format="horizontal" />
         </div>
       </section>
 
