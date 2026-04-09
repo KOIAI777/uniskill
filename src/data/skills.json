@@ -28,6 +28,73 @@
     "version": "1.1.0",
     "downloads": 0,
     "featured": false,
+    "createdAt": "2026-04-09",
+    "preview": {
+      "screenshots": [],
+      "exampleInput": "",
+      "exampleOutput": ""
+    }
+  },
+  {
+    "slug": "eap2-research-report-guide",
+    "name": "eap2-research-report-guide",
+    "nameZh": "EAP II 学术研究报告一站式助手",
+    "description": "All-in-one writing assistant for BNBU UCLC 1023 EAP II Academic Research Reports — topic selection, literature search, survey design (wjx.cn), data analysis, report writing, rubric-based evaluation with revision, and deep APA 7 .docx format checking",
+    "descriptionZh": "BNBU UCLC 1023 EAP II 学术研究报告一站式助手 — 选题、文献检索、问卷星问卷设计、数据分析、报告撰写、Rubric 对标评估与改进，以及深度 APA 7 .docx 格式检查",
+    "category": "research",
+    "schools": [
+      "bnbu"
+    ],
+    "tags": [
+      "eap2",
+      "research-report",
+      "academic-writing",
+      "survey",
+      "wjx",
+      "apa7",
+      "bnbu",
+      "formatting",
+      "rubric",
+      "docx-xml"
+    ],
+    "installCommand": "claude skill install https://uniskill.online/skills/eap2-research-report-guide.zip",
+    "downloadPath": "/skills/eap2-research-report-guide.zip",
+    "githubUrl": "https://github.com/uniskill/skills",
+    "version": "1.0.0",
+    "downloads": 0,
+    "featured": false,
+    "createdAt": "2026-04-09",
+    "preview": {
+      "screenshots": [],
+      "exampleInput": "",
+      "exampleOutput": ""
+    }
+  },
+  {
+    "slug": "bnbu-eap3-essay-checker",
+    "name": "bnbu-eap3-essay-checker",
+    "nameZh": "BNBU EAP III 议论文检查助手",
+    "description": "Check and review argumentative essays against BNBU EAP III (UCLC 1033) requirements, including structure, APA 7th formatting, rubric alignment, and academic writing quality",
+    "descriptionZh": "根据 BNBU EAP III（UCLC 1033）课程要求，检查议论文的结构、APA 7 格式、评分标准对照和学术写作质量，并生成格式化文档",
+    "category": "formatting",
+    "schools": [
+      "bnbu"
+    ],
+    "tags": [
+      "eap3",
+      "argumentative-essay",
+      "apa7",
+      "essay-check",
+      "bnbu",
+      "uclc1033",
+      "rubric"
+    ],
+    "installCommand": "claude skill install https://uniskill.online/skills/bnbu-eap3-essay-checker.zip",
+    "downloadPath": "/skills/bnbu-eap3-essay-checker.zip",
+    "githubUrl": "https://github.com/uniskill/skills",
+    "version": "1.0.0",
+    "downloads": 0,
+    "featured": false,
     "createdAt": "2026-04-06",
     "preview": {
       "screenshots": [],
