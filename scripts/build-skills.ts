@@ -31,14 +31,36 @@ interface SkillMeta {
   };
 }
 
-async function zipFolder(sourceDir: string, outPath: string): Promise<void> {
+async function zipFolder(sourceDir: string, outPath: string, rootName: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(outPath);
     const archive = archiver("zip", { zlib: { level: 9 } });
     output.on("close", resolve);
     archive.on("error", reject);
     archive.pipe(output);
-    archive.directory(sourceDir, false);
+
+    const addDir = (dir: string) => {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.name === ".DS_Store" || entry.name === "__MACOSX") {
+          continue;
+        }
+
+        const fullPath = path.join(dir, entry.name);
+        const relativePath = path.relative(sourceDir, fullPath);
+
+        if (entry.isDirectory()) {
+          addDir(fullPath);
+          continue;
+        }
+
+        archive.file(fullPath, {
+          name: path.posix.join(rootName, relativePath.split(path.sep).join("/")),
+        });
+      }
+    };
+
+    addDir(sourceDir);
     archive.finalize();
   });
 }
@@ -103,7 +125,7 @@ async function main() {
     const zipPath = path.join(PUBLIC_SKILLS, `${slug}.zip`);
 
     // Pack .zip
-    await zipFolder(skillDir, zipPath);
+    await zipFolder(skillDir, zipPath, slug);
     console.log(`✓ Packed ${slug}.zip`);
 
     // Count schools

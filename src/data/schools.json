@@ -4,13 +4,13 @@
     "name": "BNBU",
     "nameZh": "BNBU",
     "country": "CN",
-    "skillCount": 4
+    "skillCount": 5
   },
   {
     "slug": "uic",
     "name": "UIC",
     "nameZh": "UIC",
     "country": "CN",
-    "skillCount": 0
+    "skillCount": 1
   }
 ]
