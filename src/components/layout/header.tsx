@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { Icon } from "@/components/ui/icon";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { AuthNav } from "@/components/auth/auth-nav";
 import {
@@ -14,6 +16,7 @@ import { getDictionary } from "@/i18n/dictionaries";
 
 export function Header() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
   const locale = getLocaleFromPathname(pathname) ?? defaultLocale;
   const dict = getDictionary(locale);
   const navLinks = [
@@ -31,15 +34,12 @@ export function Header() {
   };
 
   return (
-    <nav
-      className="fixed top-0 w-full z-50 backdrop-blur-xl"
-      style={{ background: "rgba(247, 249, 251, 0.8)" }}
-    >
-      <div className="w-full px-6 md:px-10 h-16 flex items-center justify-between gap-4">
+    <nav className="fixed inset-x-0 top-0 z-50 border-b border-outline-variant/20 bg-surface/90 backdrop-blur-xl shadow-[0_8px_24px_rgba(25,28,30,0.06)]">
+      <div className="w-full px-4 md:px-10 min-h-16 flex items-center justify-between gap-3">
         <div className="flex items-center gap-8 min-w-0">
           <Link
             href={buildLocalizedPath(locale, "/")}
-            className="text-xl font-black tracking-tighter"
+            className="text-lg md:text-xl font-black tracking-tighter whitespace-nowrap"
           >
             UniSkill
           </Link>
@@ -62,9 +62,55 @@ export function Header() {
 
         <div className="flex items-center gap-2 md:gap-3">
           <LanguageSwitcher />
-          <AuthNav locale={locale} />
+          <div className="hidden md:flex">
+            <AuthNav locale={locale} />
+          </div>
+          <button
+            type="button"
+            onClick={() => setMenuOpen((current) => !current)}
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-outline-variant/30 bg-surface-container-low text-on-surface-variant"
+          >
+            <Icon
+              name={menuOpen ? "close" : "menu"}
+              className="text-[20px]"
+            />
+          </button>
         </div>
       </div>
+
+      {menuOpen && (
+        <div className="md:hidden border-t border-outline-variant/20 bg-surface-container-lowest px-4 pb-4 pt-3 shadow-[0_20px_40px_rgba(25,28,30,0.08)]">
+          <div className="flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={buildLocalizedPath(locale, link.href)}
+                onClick={() => setMenuOpen(false)}
+                className={`rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
+                  isActive(link.href)
+                    ? "bg-primary text-on-primary"
+                    : "bg-surface-container-low text-on-surface-variant"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              href={buildLocalizedPath(locale, "/account")}
+              onClick={() => setMenuOpen(false)}
+              className="rounded-2xl px-4 py-3 text-sm font-semibold bg-surface-container-low text-on-surface-variant"
+            >
+              {dict.header.accountFallback}
+            </Link>
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-outline-variant/20 bg-surface p-3">
+            <AuthNav locale={locale} />
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
