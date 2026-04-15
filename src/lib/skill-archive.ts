@@ -1,8 +1,4 @@
-import { execFile } from "node:child_process";
-import { randomUUID } from "node:crypto";
-import { rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { strFromU8, unzipSync } from "fflate";
 import {
   buildSkillUploadPrefill,
   parseSkillManifest,
@@ -10,41 +6,22 @@ import {
   type SkillUploadPrefill,
 } from "@/lib/skill-manifest";
 
-function execZipCommand(args: string[]) {
-  return new Promise<string>((resolve, reject) => {
-    execFile("unzip", args, { encoding: "utf8" }, (error, stdout) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      resolve(stdout);
-    });
-  });
-}
-
-export async function withTemporaryZipFile<T>(
-  file: File,
-  callback: (zipPath: string) => Promise<T>
-) {
-  const tempZipPath = join(tmpdir(), `community-skill-${randomUUID()}.zip`);
-
-  try {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(tempZipPath, buffer);
-    return await callback(tempZipPath);
-  } finally {
-    await rm(tempZipPath, { force: true });
-  }
-}
-
-export async function listZipEntries(zipPath: string) {
-  const stdout = await execZipCommand(["-Z1", zipPath]);
-
-  return stdout
-    .split("\n")
-    .map((line) => line.trim())
+function normalizeZipEntries(entries: Record<string, Uint8Array>) {
+  return Object.keys(entries)
+    .map((entry) => entry.trim())
     .filter(Boolean);
+}
+
+function unzipArchive(fileBuffer: Uint8Array) {
+  try {
+    return unzipSync(fileBuffer);
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? `The uploaded zip could not be opened: ${error.message}`
+        : "The uploaded zip could not be opened."
+    );
+  }
 }
 
 export function findSkillManifestEntry(entries: string[]) {
@@ -55,36 +32,40 @@ export function findSkillManifestEntry(entries: string[]) {
   );
 }
 
-export async function readZipEntry(zipPath: string, entryPath: string) {
-  return execZipCommand(["-p", zipPath, entryPath]);
-}
-
 export interface InspectedSkillArchive {
   manifest: ParsedSkillManifest;
   manifestPath: string;
   warnings: string[];
 }
 
-export async function inspectSkillArchive(file: File): Promise<InspectedSkillArchive> {
-  return withTemporaryZipFile(file, async (zipPath) => {
-    const entries = await listZipEntries(zipPath);
-    const manifestPath = findSkillManifestEntry(entries);
+export async function inspectSkillArchive(
+  file: File
+): Promise<InspectedSkillArchive> {
+  const fileBuffer = new Uint8Array(await file.arrayBuffer());
+  const archiveEntries = unzipArchive(fileBuffer);
+  const entries = normalizeZipEntries(archiveEntries);
+  const manifestPath = findSkillManifestEntry(entries);
 
-    if (!manifestPath) {
-      throw new Error(
-        "The uploaded zip does not contain a SKILL.md file. Please package your skill folder so that SKILL.md is included inside the archive."
-      );
-    }
+  if (!manifestPath) {
+    throw new Error(
+      "The uploaded zip does not contain a SKILL.md file. Please package your skill folder so that SKILL.md is included inside the archive."
+    );
+  }
 
-    const skillMarkdown = await readZipEntry(zipPath, manifestPath);
-    const { manifest, warnings } = parseSkillManifest(skillMarkdown);
+  const manifestBuffer = archiveEntries[manifestPath];
 
-    return {
-      manifest,
-      manifestPath,
-      warnings,
-    };
-  });
+  if (!manifestBuffer) {
+    throw new Error("The uploaded zip contains an unreadable SKILL.md file.");
+  }
+
+  const skillMarkdown = strFromU8(manifestBuffer);
+  const { manifest, warnings } = parseSkillManifest(skillMarkdown);
+
+  return {
+    manifest,
+    manifestPath,
+    warnings,
+  };
 }
 
 export async function inspectSkillArchiveForPrefill(
