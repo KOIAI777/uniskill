@@ -5,12 +5,5 @@
     "nameZh": "BNBU",
     "country": "CN",
     "skillCount": 5
-  },
-  {
-    "slug": "uic",
-    "name": "UIC",
-    "nameZh": "UIC",
-    "country": "CN",
-    "skillCount": 1
   }
 ]

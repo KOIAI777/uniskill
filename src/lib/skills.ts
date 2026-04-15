@@ -1,7 +1,6 @@
 import skillsData from "@/data/skills.json";
-import schoolsData from "@/data/schools.json";
 import categoriesData from "@/data/categories.json";
-import type { Skill, School, CategoryInfo, Category } from "@/types";
+import type { Skill, CategoryInfo, Category } from "@/types";
 
 export function getAllSkills(): Skill[] {
   return skillsData as Skill[];
@@ -57,14 +56,6 @@ export function searchSkills(query: string): Skill[] {
       s.description.toLowerCase().includes(q) ||
       s.tags.some((t) => t.includes(q))
   );
-}
-
-export function getAllSchools(): School[] {
-  return schoolsData as School[];
-}
-
-export function getSchoolBySlug(slug: string): School | undefined {
-  return getAllSchools().find((s) => s.slug === slug);
 }
 
 export function getAllCategories(): CategoryInfo[] {

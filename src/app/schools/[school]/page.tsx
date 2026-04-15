@@ -3,15 +3,13 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
 import { SkillCard } from "@/components/skill/skill-card";
 import { AdSlot } from "@/components/layout/ad-slot";
-import {
-  getSchoolBySlug,
-  getSkillsBySchool,
-  getAllSchools,
-} from "@/lib/skills";
+import { getManagedSchoolBySlug, getManagedSchools } from "@/lib/managed-schools";
+import { getOfficialSkillsFromDb, mapOfficialCommunitySkillToSkill } from "@/lib/unified-skills";
 import type { Metadata } from "next";
 
-export function generateStaticParams() {
-  return getAllSchools().map((school) => ({ school: school.slug }));
+export async function generateStaticParams() {
+  const schools = await getManagedSchools();
+  return schools.map((school) => ({ school: school.slug }));
 }
 
 export async function generateMetadata({
@@ -20,9 +18,11 @@ export async function generateMetadata({
   params: Promise<{ school: string }>;
 }): Promise<Metadata> {
   const { school: schoolSlug } = await params;
-  const school = getSchoolBySlug(schoolSlug);
+  const school = await getManagedSchoolBySlug(schoolSlug);
   if (!school) return {};
-  const skills = getSkillsBySchool(schoolSlug);
+  const skills = (await getOfficialSkillsFromDb())
+    .map(mapOfficialCommunitySkillToSkill)
+    .filter((skill) => skill.schools.includes(schoolSlug));
   return {
     title: `${school.name} Skills`,
     description: `${school.name} 的 ${skills.length} 个可用 AI 学术工具，免费下载即用。`,
@@ -39,10 +39,12 @@ export default async function SchoolPage({
   params: Promise<{ school: string }>;
 }) {
   const { school: schoolSlug } = await params;
-  const school = getSchoolBySlug(schoolSlug);
+  const school = await getManagedSchoolBySlug(schoolSlug);
   if (!school) notFound();
 
-  const skills = getSkillsBySchool(schoolSlug);
+  const skills = (await getOfficialSkillsFromDb())
+    .map(mapOfficialCommunitySkillToSkill)
+    .filter((skill) => skill.schools.includes(schoolSlug));
 
   return (
     <>

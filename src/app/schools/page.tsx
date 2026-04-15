@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import { getAllSchools, getSkillsBySchool } from "@/lib/skills";
+import { getManagedSchools } from "@/lib/managed-schools";
+import { getOfficialSkillsFromDb, mapOfficialCommunitySkillToSkill } from "@/lib/unified-skills";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,8 +9,11 @@ export const metadata: Metadata = {
   description: "浏览各大学的可用 AI 学术 Skills，找到适合你学校的工具。",
 };
 
-export default function SchoolsPage() {
-  const schools = getAllSchools();
+export default async function SchoolsPage() {
+  const schools = await getManagedSchools();
+  const officialSkills = (await getOfficialSkillsFromDb()).map(
+    mapOfficialCommunitySkillToSkill
+  );
 
   return (
     <>
@@ -38,7 +42,9 @@ export default function SchoolsPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {schools.map((school) => {
-              const skills = getSkillsBySchool(school.slug);
+              const skills = officialSkills.filter((skill) =>
+                skill.schools.includes(school.slug)
+              );
               return (
                 <Link
                   key={school.slug}

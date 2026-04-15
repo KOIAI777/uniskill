@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
+import { buildLocalizedPath, defaultLocale, type AppLocale } from "@/i18n/config";
 import type { Skill } from "@/types";
 
 const categoryEmoji: Record<string, string> = {
@@ -11,13 +12,57 @@ const categoryEmoji: Record<string, string> = {
   research: "🔍",
 };
 
-export function SkillCard({ skill }: { skill: Skill }) {
+export function SkillCard({
+  skill,
+  locale = defaultLocale,
+}: {
+  skill: Skill;
+  locale?: AppLocale;
+}) {
+  return <SkillCardInner skill={skill} compact={false} locale={locale} />;
+}
+
+export function CompactSkillCard({
+  skill,
+  locale = defaultLocale,
+}: {
+  skill: Skill;
+  locale?: AppLocale;
+}) {
+  return <SkillCardInner skill={skill} compact locale={locale} />;
+}
+
+function SkillCardInner({
+  skill,
+  compact,
+  locale,
+}: {
+  skill: Skill;
+  compact: boolean;
+  locale: AppLocale;
+}) {
+  const primaryCategory = Array.isArray(skill.category)
+    ? skill.category[0]
+    : skill.category;
+  const visibleTags = compact ? 2 : 3;
+  const name = locale === "en" ? skill.name : skill.nameZh;
+  const secondaryName = locale === "en" ? skill.nameZh : skill.name;
+  const description = locale === "en" ? skill.description : skill.descriptionZh;
+
   return (
-    <Link href={`/skills/${skill.slug}`}>
-      <div className="group bg-surface-container-lowest p-6 rounded-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-[0px_10px_40px_rgba(25,28,30,0.06)] flex flex-col h-full">
-        <div className="flex justify-between items-start mb-6">
-          <div className="w-12 h-12 flex items-center justify-center text-3xl bg-surface-container rounded-lg group-hover:scale-110 transition-transform">
-            {categoryEmoji[Array.isArray(skill.category) ? skill.category[0] : skill.category] || "📦"}
+    <Link href={buildLocalizedPath(locale, `/skills/${skill.slug}`)}>
+      <div
+        className={`group bg-surface-container-lowest rounded-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-[0px_10px_40px_rgba(25,28,30,0.06)] flex flex-col h-full ${
+          compact ? "p-4" : "p-6"
+        }`}
+      >
+        <div className={`flex justify-between items-start ${compact ? "mb-4" : "mb-6"}`}>
+          <div
+            className={`flex items-center justify-center bg-surface-container rounded-lg group-hover:scale-110 transition-transform ${
+              compact ? "w-10 h-10 text-2xl" : "w-12 h-12 text-3xl"
+            }`}
+          >
+            {categoryEmoji[primaryCategory] || "📦"}
           </div>
           <div className="text-right">
             <div className="text-[10px] font-bold text-outline uppercase tracking-wider">
@@ -29,15 +74,20 @@ export function SkillCard({ skill }: { skill: Skill }) {
           </div>
         </div>
 
-        <h3 className="text-xl font-bold mb-2">
-          {skill.nameZh} ({skill.name})
+        <h3 className={`${compact ? "text-base leading-snug" : "text-xl"} font-bold mb-2`}>
+          {name}
+          {secondaryName ? ` (${secondaryName})` : ""}
         </h3>
-        <p className="text-on-surface-variant text-sm mb-6 leading-relaxed">
-          {skill.descriptionZh}
+        <p
+          className={`text-on-surface-variant leading-relaxed ${
+            compact ? "text-xs mb-4" : "text-sm mb-6"
+          }`}
+        >
+          {description}
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-6">
-          {skill.tags.slice(0, 3).map((tag, i) => (
+        <div className={`flex flex-wrap gap-2 ${compact ? "mb-4" : "mb-6"}`}>
+          {skill.tags.slice(0, visibleTags).map((tag, i) => (
             <span
               key={tag}
               className={`px-2 py-1 text-[10px] font-bold uppercase rounded-md ${
@@ -52,8 +102,15 @@ export function SkillCard({ skill }: { skill: Skill }) {
         </div>
 
         <div className="flex items-center justify-end mt-auto">
-          <button className="p-2 bg-surface-container-high rounded-full hover:bg-primary hover:text-white transition-colors">
-            <Icon name="arrow_forward" className="text-xl" />
+          <button
+            className={`bg-surface-container-high rounded-full hover:bg-primary hover:text-white transition-colors ${
+              compact ? "p-1.5" : "p-2"
+            }`}
+          >
+            <Icon
+              name="arrow_forward"
+              className={compact ? "text-lg" : "text-xl"}
+            />
           </button>
         </div>
       </div>

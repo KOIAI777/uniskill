@@ -4,7 +4,7 @@ nameZh: FBM FYP 全流程助手
 description: End-to-end FBM Final Year Project copilot for topic selection, literature review, proposal drafting, RQ and hypothesis design, WJX survey planning, data analysis, Chinese thesis drafting, APA 7 checking, and final consistency audit
 descriptionZh: 面向 FBM、EBIS 优先的 FYP 全流程助手，覆盖选题、文献检索、proposal、RQ 与假设、问卷星问卷、数据分析、中文论文起草、APA 7 检查与最终审查
 category: [research, reference, formatting]
-schools: [bnbu, uic]
+schools: [bnbu]
 tags: [fyp, fbm, ebis, proposal, thesis, questionnaire, wjx, apa7, research, audit]
 featured: true
 version: 1.0.0

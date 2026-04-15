@@ -114,8 +114,7 @@
       "formatting"
     ],
     "schools": [
-      "bnbu",
-      "uic"
+      "bnbu"
     ],
     "tags": [
       "fyp",
@@ -135,7 +134,35 @@
     "version": "1.0.0",
     "downloads": 0,
     "featured": true,
-    "createdAt": "2026-04-10",
+    "createdAt": "2026-04-14",
+    "preview": {
+      "screenshots": [],
+      "exampleInput": "",
+      "exampleOutput": ""
+    }
+  },
+  {
+    "slug": "test-skill",
+    "name": "test-skill",
+    "nameZh": "测试技能",
+    "description": "A standard test skill for validating UniSkill parsing, structure, and output behavior",
+    "descriptionZh": "一个用于验证 UniSkill 解析、结构和输出行为的标准测试技能",
+    "category": "formatting",
+    "schools": [],
+    "tags": [
+      "test",
+      "validation",
+      "parsing",
+      "template",
+      "markdown"
+    ],
+    "installCommand": "claude skill install https://uniskill.online/skills/test-skill.zip",
+    "downloadPath": "/skills/test-skill.zip",
+    "githubUrl": "https://github.com/uniskill/skills",
+    "version": "1.0.0",
+    "downloads": 0,
+    "featured": false,
+    "createdAt": "2026-04-15",
     "preview": {
       "screenshots": [],
       "exampleInput": "",

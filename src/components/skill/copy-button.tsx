@@ -3,7 +3,17 @@
 import { useState } from "react";
 import { Icon } from "@/components/ui/icon";
 
-export function CopyButton({ text, label }: { text: string; label: string }) {
+export function CopyButton({
+  text,
+  label,
+  copiedLabel = "已复制!",
+  showPreview = true,
+}: {
+  text: string;
+  label: string;
+  copiedLabel?: string;
+  showPreview?: boolean;
+}) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -20,9 +30,11 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
       <Icon name={copied ? "check" : "content_copy"} className="text-xl" />
       <div className="text-left">
         <div className="text-[10px] uppercase tracking-wider opacity-80">
-          {copied ? "已复制!" : label}
+          {copied ? copiedLabel : label}
         </div>
-        <div className="text-sm font-mono truncate max-w-[240px]">{text}</div>
+        {showPreview && (
+          <div className="text-sm font-mono truncate max-w-[240px]">{text}</div>
+        )}
       </div>
     </button>
   );

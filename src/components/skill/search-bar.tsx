@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import type { Skill } from "@/types";
+import type { Category } from "@/types";
 
 const categoryEmoji: Record<string, string> = {
   formatting: "📝",
@@ -15,27 +15,97 @@ const categoryEmoji: Record<string, string> = {
   research: "🔍",
 };
 
-export function SearchBar({ skills }: { skills: Skill[] }) {
+export interface SearchBarSkill {
+  slug: string;
+  name: string;
+  nameZh: string;
+  description: string;
+  descriptionZh: string;
+  category: Category | Category[];
+  tags: string[];
+  version: string;
+  href: string;
+  sourceLabel?: string;
+}
+
+interface SearchBarMessages {
+  placeholder: string;
+  noResults: string;
+  moreResults: string;
+}
+
+const defaultMessages: SearchBarMessages = {
+  placeholder: "Search for skills (e.g. Essay, Citation...)",
+  noResults: "没有找到匹配的 Skill",
+  moreResults: "还有 {count} 个结果...",
+};
+
+function scoreSearchResult(skill: SearchBarSkill, rawQuery: string) {
+  const query = rawQuery.trim().toLowerCase();
+
+  if (!query) {
+    return 0;
+  }
+
+  const name = skill.name.toLowerCase();
+  const nameZh = skill.nameZh.toLowerCase();
+  const description = skill.description.toLowerCase();
+  const descriptionZh = skill.descriptionZh.toLowerCase();
+  const tags = skill.tags.map((tag) => tag.toLowerCase());
+
+  let score = 0;
+
+  if (name === query) score += 1000;
+  if (nameZh === query) score += 1000;
+
+  if (name.startsWith(query)) score += 700;
+  if (nameZh.startsWith(query)) score += 700;
+
+  if (tags.some((tag) => tag === query)) score += 650;
+  if (tags.some((tag) => tag.startsWith(query))) score += 500;
+
+  if (name.includes(query)) score += 320;
+  if (nameZh.includes(query)) score += 320;
+
+  if (tags.some((tag) => tag.includes(query))) score += 220;
+
+  if (description.startsWith(query)) score += 120;
+  if (descriptionZh.startsWith(query)) score += 120;
+
+  if (description.includes(query)) score += 60;
+  if (descriptionZh.includes(query)) score += 60;
+
+  return score;
+}
+
+export function SearchBar({
+  skills,
+  messages = defaultMessages,
+}: {
+  skills: SearchBarSkill[];
+  messages?: SearchBarMessages;
+}) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
 
   const results = query.trim()
-    ? skills.filter((s) => {
-        const q = query.toLowerCase();
-        return (
-          s.name.toLowerCase().includes(q) ||
-          s.nameZh.includes(q) ||
-          s.description.toLowerCase().includes(q) ||
-          s.descriptionZh.includes(q) ||
-          s.tags.some((t) => t.toLowerCase().includes(q))
-        );
-      })
+    ? skills
+        .map((skill) => ({
+          skill,
+          score: scoreSearchResult(skill, query),
+        }))
+        .filter(({ score }) => score > 0)
+        .sort((a, b) => {
+          if (b.score !== a.score) {
+            return b.score - a.score;
+          }
+
+          return a.skill.nameZh.length - b.skill.nameZh.length;
+        })
+        .map(({ skill }) => skill)
     : [];
 
   const updatePos = useCallback(() => {
@@ -69,7 +139,8 @@ export function SearchBar({ skills }: { skills: Skill[] }) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const showDropdown = open && query.trim().length > 0 && mounted;
+  const isBrowser = typeof window !== "undefined";
+  const showDropdown = open && query.trim().length > 0 && isBrowser;
 
   const dropdown = showDropdown ? (
     <div
@@ -96,8 +167,8 @@ export function SearchBar({ skills }: { skills: Skill[] }) {
                 ] || "📦";
               return (
                 <Link
-                  key={skill.slug}
-                  href={`/skills/${skill.slug}`}
+                  key={`${skill.href}:${skill.slug}`}
+                  href={skill.href}
                   onClick={() => {
                     setOpen(false);
                     setQuery("");
@@ -106,8 +177,15 @@ export function SearchBar({ skills }: { skills: Skill[] }) {
                 >
                   <span className="text-2xl">{emoji}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="font-bold text-sm truncate">
-                      {skill.nameZh}
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="font-bold text-sm truncate">
+                        {skill.nameZh}
+                      </div>
+                      {skill.sourceLabel && (
+                        <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-surface-container text-[10px] font-bold text-on-surface-variant">
+                          {skill.sourceLabel}
+                        </span>
+                      )}
                     </div>
                     <div className="text-xs text-on-surface-variant truncate">
                       {skill.descriptionZh || skill.description}
@@ -122,14 +200,14 @@ export function SearchBar({ skills }: { skills: Skill[] }) {
           </div>
           {results.length > 6 && (
             <div className="px-5 py-3 text-xs text-on-surface-variant border-t border-outline-variant/20 text-center">
-              还有 {results.length - 6} 个结果...
+              {messages.moreResults.replace("{count}", String(results.length - 6))}
             </div>
           )}
         </>
       ) : (
         <div className="px-5 py-6 text-center">
           <p className="text-sm text-on-surface-variant">
-            没有找到匹配的 Skill
+            {messages.noResults}
           </p>
         </div>
       )}
@@ -145,7 +223,7 @@ export function SearchBar({ skills }: { skills: Skill[] }) {
         <input
           ref={inputRef}
           className="w-full pl-14 pr-6 py-5 bg-surface-container-lowest border-none rounded-xl text-lg shadow-sm focus:ring-2 focus:ring-primary transition-all duration-300 placeholder:text-outline-variant"
-          placeholder="Search for skills (e.g. Essay, Citation...)"
+          placeholder={messages.placeholder}
           type="text"
           value={query}
           onChange={(e) => {
@@ -159,7 +237,7 @@ export function SearchBar({ skills }: { skills: Skill[] }) {
           }}
         />
       </div>
-      {mounted && dropdown && createPortal(dropdown, document.body)}
+      {isBrowser && dropdown && createPortal(dropdown, document.body)}
     </>
   );
 }

@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { PageTransition } from "@/components/layout/page-transition";
+import { localeCookieName, localeToHtmlLang, normalizeLocale } from "@/i18n/config";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -18,45 +20,46 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://uniskill.online"),
   title: {
-    default: "UniSkill - 大学生的 AI 学术工具箱",
+    default: "UniSkill",
     template: "%s | UniSkill",
   },
   description:
-    "免费下载学校专属 AI Skill，即装即用。作业格式化、引用检查、学术邮件等实用工具，为你的学校定制。",
+    "Bilingual AI skill marketplace for university students.",
   keywords: [
     "UniSkill",
-    "AI学术工具",
+    "AI academic tools",
     "Claude Code",
     "SKILL.md",
-    "学术格式化",
-    "引用检查",
-    "大学工具",
-    "免费学术工具",
+    "student skills",
+    "bilingual skills",
   ],
   openGraph: {
     type: "website",
     locale: "zh_CN",
     siteName: "UniSkill",
-    title: "UniSkill - 大学生的 AI 学术工具箱",
+    title: "UniSkill",
     description:
-      "免费下载学校专属 AI Skill，即装即用。作业格式化、引用检查、学术邮件等实用工具。",
+      "Bilingual AI skill marketplace for university students.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "UniSkill - 大学生的 AI 学术工具箱",
+    title: "UniSkill",
     description:
-      "免费下载学校专属 AI Skill，即装即用。作业格式化、引用检查、学术邮件等实用工具。",
+      "Bilingual AI skill marketplace for university students.",
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get(localeCookieName)?.value);
+
   return (
     <html
-      lang="zh-CN"
+      lang={localeToHtmlLang(locale)}
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>

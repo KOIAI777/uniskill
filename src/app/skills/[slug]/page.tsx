@@ -4,8 +4,10 @@ import { Icon } from "@/components/ui/icon";
 import { CopyButton } from "@/components/skill/copy-button";
 import { DownloadButton } from "@/components/skill/download-button";
 import { SkillCard } from "@/components/skill/skill-card";
+import { SkillComments } from "@/components/comments/skill-comments";
 import { AdSlot } from "@/components/layout/ad-slot";
 import { getSkillBySlug, getRelatedSkills, getAllSkills } from "@/lib/skills";
+import { getOfficialSkillBySlugFromDb } from "@/lib/unified-skills";
 import type { Metadata } from "next";
 
 export function generateStaticParams() {
@@ -18,7 +20,17 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const skill = getSkillBySlug(slug);
+  const dbSkill = await getOfficialSkillBySlugFromDb(slug);
+  const fallbackSkill = getSkillBySlug(slug);
+  const skill = dbSkill
+    ? {
+        name: dbSkill.name,
+        nameZh: dbSkill.nameZh,
+        description: dbSkill.description,
+        descriptionZh: dbSkill.descriptionZh,
+        tags: dbSkill.tags,
+      }
+    : fallbackSkill;
   if (!skill) return {};
   return {
     title: `${skill.nameZh} (${skill.name})`,
@@ -46,7 +58,36 @@ export default async function SkillDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const skill = getSkillBySlug(slug);
+  const dbSkill = await getOfficialSkillBySlugFromDb(slug);
+  const fallbackSkill = getSkillBySlug(slug);
+
+  const skill = dbSkill
+    ? {
+        slug: dbSkill.slug,
+        name: dbSkill.name,
+        nameZh: dbSkill.nameZh,
+        description: dbSkill.description,
+        descriptionZh: dbSkill.descriptionZh,
+        category: dbSkill.category,
+        schools: dbSkill.schoolSlug ? [dbSkill.schoolSlug] : [],
+        tags: dbSkill.tags,
+        installCommand:
+          dbSkill.installCommand ||
+          `claude skill install https://uniskill.online/api/community-skills/${dbSkill.id}/download`,
+        downloadPath: `/api/community-skills/${dbSkill.id}/download`,
+        githubUrl: dbSkill.githubUrl || "https://github.com/uniskill/skills",
+        version: dbSkill.version,
+        downloads: dbSkill.downloads,
+        featured: dbSkill.featured,
+        createdAt: (dbSkill.publishedAt || dbSkill.createdAt).split("T")[0],
+        preview: {
+          screenshots: [],
+          exampleInput: "",
+          exampleOutput: "",
+        },
+      }
+    : fallbackSkill;
+
   if (!skill) notFound();
 
   const related = getRelatedSkills(skill);
@@ -236,6 +277,8 @@ export default async function SkillDetailPage({
           ))}
         </div>
       </section>
+
+      <SkillComments targetKind="official_skill" targetKey={skill.slug} />
 
       {/* Related Skills */}
       {related.length > 0 && (

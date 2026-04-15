@@ -1,15 +1,72 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/icon";
-import { SkillCard } from "@/components/skill/skill-card";
-import { SearchBar } from "@/components/skill/search-bar";
+import { CompactSkillCard } from "@/components/skill/skill-card";
+import { SearchBar, type SearchBarSkill } from "@/components/skill/search-bar";
 import { AdSlot } from "@/components/layout/ad-slot";
-import { getFeaturedSkills, getAllCategories, getAllSchools, getAllSkills } from "@/lib/skills";
+import { getFeaturedSkills, getAllCategories, getAllSkills } from "@/lib/skills";
+import { createClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { mapCommunitySkillRow, type CommunitySkillRow } from "@/lib/community-skills";
+import { getManagedSchools } from "@/lib/managed-schools";
+import { getOfficialSkillsFromDb, mapOfficialCommunitySkillToSkill } from "@/lib/unified-skills";
 
-export default function HomePage() {
-  const allSkills = getAllSkills();
-  const featuredSkills = getFeaturedSkills();
+export default async function HomePage() {
+  const dbOfficialSkills = await getOfficialSkillsFromDb();
+  const officialSkills =
+    dbOfficialSkills.length > 0
+      ? dbOfficialSkills.map(mapOfficialCommunitySkillToSkill)
+      : getAllSkills();
+  let approvedCommunitySkills = [] as ReturnType<typeof mapCommunitySkillRow>[];
+
+  if (isSupabaseConfigured()) {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("community_skills")
+      .select(
+        "id, slug, source_type, author_id, author_name, author_email, name, name_zh, description, description_zh, category, school_slug, custom_school_name, tags, github_url, version, install_command, downloads, featured, is_verified, published_at, file_path, original_file_name, file_size, status, review_note, reviewed_at, reviewed_by, created_at, updated_at"
+      )
+      .eq("source_type", "community")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
+
+    approvedCommunitySkills = ((data ?? []) as CommunitySkillRow[]).map(
+      mapCommunitySkillRow
+    );
+  }
+
+  const searchSkills: SearchBarSkill[] = [
+    ...officialSkills.map((skill) => ({
+      slug: skill.slug,
+      name: skill.name,
+      nameZh: skill.nameZh,
+      description: skill.description,
+      descriptionZh: skill.descriptionZh,
+      category: skill.category,
+      tags: skill.tags,
+      version: skill.version,
+      href: `/skills/${skill.slug}`,
+      sourceLabel: "精选",
+    })),
+    ...approvedCommunitySkills.map((skill) => ({
+      slug: skill.slug,
+      name: skill.name,
+      nameZh: skill.nameZh,
+      description: skill.description,
+      descriptionZh: skill.descriptionZh,
+      category: skill.category,
+      tags: skill.tags,
+      version: skill.version,
+      href: `/community/${skill.slug}`,
+      sourceLabel: "社区",
+    })),
+  ];
+  const featuredSkills =
+    dbOfficialSkills.length > 0
+      ? officialSkills
+      : getFeaturedSkills();
+  const homeFeaturedSkills = featuredSkills.slice(0, 6);
   const categories = getAllCategories();
-  const schools = getAllSchools();
+  const schools = await getManagedSchools();
 
   return (
     <>
@@ -35,7 +92,7 @@ export default function HomePage() {
 
             {/* Search Bar */}
             <div className="animate-fade-up-2">
-              <SearchBar skills={allSkills} />
+              <SearchBar skills={searchSkills} />
             </div>
 
             {/* School Labels */}
@@ -66,12 +123,12 @@ export default function HomePage() {
           <Icon name="volunteer_activism" className="text-primary" />
           <p className="text-on-surface-variant font-medium">
             Have a skill to share? Submit your tools to{" "}
-            <a
+            <Link
               className="text-primary font-bold hover:underline"
-              href="mailto:1146850129@qq.com"
+              href="/upload"
             >
-              1146850129@qq.com
-            </a>
+              /upload
+            </Link>
           </p>
         </div>
       </section>
@@ -88,9 +145,9 @@ export default function HomePage() {
                 最受学生欢迎的学术辅助工具
               </p>
             </div>
-            {featuredSkills.length > 0 && (
+            {homeFeaturedSkills.length > 0 && (
               <Link
-                href="/schools"
+                href="/community"
                 className="text-primary font-semibold flex items-center gap-1 hover:gap-2 transition-all"
               >
                 View All{" "}
@@ -98,10 +155,10 @@ export default function HomePage() {
               </Link>
             )}
           </div>
-          {featuredSkills.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredSkills.map((skill) => (
-                <SkillCard key={skill.slug} skill={skill} />
+          {homeFeaturedSkills.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+              {homeFeaturedSkills.map((skill) => (
+                <CompactSkillCard key={skill.slug} skill={skill} />
               ))}
             </div>
           ) : (
@@ -149,7 +206,7 @@ export default function HomePage() {
             {categories.map((cat) => (
               <Link
                 key={cat.slug}
-                href={`/category/${cat.slug}`}
+                href={`/community?category=${cat.slug}`}
                 className="group p-8 rounded-xl bg-surface-container-low text-center transition-all hover:bg-primary hover:text-on-primary flex flex-col items-center"
               >
                 <span
